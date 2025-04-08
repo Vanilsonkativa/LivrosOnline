@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loja de Livros</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%);
+      color: #333;
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 12px;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      width: 100%;
+      max-width: 1100px;
+    }
+    .logo {
+      font-size: 1.6em;
+      font-weight: bold;
+      color: #3f2b96;
+    }
+    nav a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+    }
+    nav a:hover {
+      color: #25d366;
+    }
+    .livros {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      max-width: 1100px;
+      width: 100%;
+    }
+    .livro {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s ease;
+    }
+    .livro:hover {
+      transform: scale(1.05);
+    }
+    .livro img {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .livro h2 {
+      font-size: 1.1em;
+      margin-bottom: 5px;
+      text-align: center;
+    }
+    .livro p {
+      font-size: 0.9em;
+      text-align: center;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    .botao {
+      background: #25d366;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 8px;
+      width: 100%;
+      text-align: center;
+      cursor: pointer;
+    }
+    .botao:hover {
+      background: #1ebc59;
+    }
+    #sobre {
+      margin-top: 60px;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      max-width: 1100px;
+      width: 100%;
+      text-align: center;
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #aaa;
+    }
+    #carrinho-info {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #25d366;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 50px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-weight: bold;
+      z-index: 999;
+      cursor: pointer;
+    }
+    #carrinho-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      z-index: 1000;
+      max-width: 400px;
+      width: 100%;
+    }
+    #carrinho-modal ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    #carrinho-modal li {
+      padding: 10px 0;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #ddd;
+    }
+    #carrinho-modal li button {
+      background: #e74c3c;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #carrinho-modal button {
+      background: #25d366;
+      color: white;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">📚 Loja de Livros</div>
+    <nav>
+      <a href="#">Início</a>
+      <a href="#sobre">Sobre</a>
+    </nav>
+  </header>
+
+  <div id="carrinho-info">🧺 Carrinho (0)</div>
+  <div class="livros" id="listaLivros"></div>
+
+  <section id="sobre">
+    <h2>Sobre o Desenvolvedor</h2>
+    <p>Este site foi desenvolvido por <strong>Vanilson Kativa</strong>, estudante do curso de <strong>Engenharia Informática</strong>. O objetivo é oferecer uma experiência moderna e acessível para a aquisição de livros online.</p>
+  </section>
+
+  <footer>
+    &copy; 2025 Loja de Livros Online. Todos os direitos reservados.
+  </footer>
+
+  <div id="carrinho-modal">
+    <h3>Itens no Carrinho</h3>
+    <ul id="listaCarrinho"></ul>
+    <button onclick="finalizarCompra()">Finalizar Compra</button>
+  </div>
+
+  <script>
+    const numeroWhatsApp = '244928986120';
+    const livros = [
+      { titulo: "Dom Quixote", preco: 8500 },
+      { titulo: "Orgulho e Preconceito", preco: 7800 },
+      { titulo: "1984", preco: 9200 },
+      { titulo: "O Pequeno Príncipe", preco: 6000 },
+      { titulo: "O Senhor dos Anéis", preco: 11000 },
+      { titulo: "Harry Potter e a Pedra Filosofal", preco: 9500 },
+      { titulo: "O Alquimista", preco: 7200 },
+      { titulo: "O Código Da Vinci", preco: 8800 },
+      { titulo: "A Menina que Roubava Livros", preco: 7900 },
+      { titulo: "Cem Anos de Solidão", preco: 9700 },
+      { titulo: "O Hobbit", preco: 8900 },
+      { titulo: "A Revolução dos Bichos", preco: 6800 },
+      { titulo: "Crime e Castigo", preco: 9600 },
+      { titulo: "O Apanhador no Campo de Centeio", preco: 8700 },
+      { titulo: "O Diário de Anne Frank", preco: 7500 },
+      { titulo: "O Nome da Rosa", preco: 8400 },
+      { titulo: "Matar um Rouxinol", preco: 7600 },
+      { titulo: "O Morro dos Ventos Uivantes", preco: 7900 },
+      { titulo: "As Aventuras de Sherlock Holmes", preco: 8200 },
+      { titulo: "A Divina Comédia", preco: 9900 }
+    ];
+
+    const listaLivros = document.getElementById('listaLivros');
+    const carrinhoInfo = document.getElementById('carrinho-info');
+    const carrinhoModal = document.getElementById('carrinho-modal');
+    const listaCarrinho = document.getElementById('listaCarrinho');
+    let carrinho = [];
+
+    function atualizarCarrinho() {
+      carrinhoInfo.textContent = `🧺 Carrinho (${carrinho.length})`;
+    }
+
+    carrinhoInfo.addEventListener('click', () => {
+      if (carrinho.length > 0) {
+        exibirCarrinho();
+      } else {
+        alert('O carrinho está vazio.');
+      }
+    });
+
+    function exibirCarrinho() {
+      listaCarrinho.innerHTML = '';
+      carrinho.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          ${item.titulo} (${item.quantidade}x) - ${item.preco * item.quantidade} Kz
+          <button onclick="removerDoCarrinho(${index})">Remover</button>
+        `;
+        listaCarrinho.appendChild(li);
+      });
+      carrinhoModal.style.display = 'block';
+    }
+
+    function removerDoCarrinho(index) {
+      carrinho.splice(index, 1);
+      atualizarCarrinho();
+      exibirCarrinho();
+    }
+
+    function finalizarCompra() {
+      let mensagem = `Olá! Gostaria de adquirir os seguintes livros: %0A- `;
+      carrinho.forEach((item) => {
+        mensagem += `${item.titulo} (${item.quantidade}x) - ${item.preco * item.quantidade} Kz %0A- `;
+      });
+      window.open(`https://wa.me/${numeroWhatsApp}?text=${mensagem}`, '_blank');
+    }
+
+    livros.forEach(({ titulo, preco }) => {
+      const div = document.createElement('div');
+      div.className = 'livro';
+      div.innerHTML = `
+        <img src="https://via.placeholder.com/200x260?text=${encodeURIComponent(titulo)}" alt="${titulo}" />
+        <h2>${titulo}</h2>
+        <p>Um dos livros mais renomados da literatura mundial.</p>
+        <span><strong>Preço:</strong> ${preco} Kz</span>
+        <input type="number" id="quantidade-${titulo}" value="1" min="1" style="width: 60px; text-align: center;" />
+        <button class="botao" onclick="adicionarAoCarrinho('${titulo}', ${preco})">🧺 Adicionar ao carrinho</button>
+      `;
+      listaLivros.appendChild(div);
+    });
+
+    window.adicionarAoCarrinho = function(titulo, preco) {
+      const quantidade = document.getElementById(`quantidade-${titulo}`).value;
+      const livroExistente = carrinho.find((item) => item.titulo === titulo);
+
+      if (livroExistente) {
+        livroExistente.quantidade += parseInt(quantidade);
+      } else {
+        carrinho.push({ titulo, preco, quantidade: parseInt(quantidade) });
+      }
+      atualizarCarrinho();
+    };
+  </script>
+</body>
+</html>
